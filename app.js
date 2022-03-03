@@ -1,6 +1,7 @@
 const express = require("express");
 const ejs = require("ejs");
 const mongoose = require("mongoose");
+var encrypt = require("mongoose-encryption");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -9,12 +10,18 @@ app.use(express.urlencoded({extended:true}));
 app.use(express.static(__dirname+"/public"));
 app.set("view engine", "ejs");
 
+
+
 mongoose.connect("mongodb://localhost:27017/userDB");
 
-const userSchema = mongoose.Schema({
+const userSchema = new mongoose.Schema({
     email: String,
     password: String
 });
+
+var secret = "thisisisisyourorsecresecret";
+
+userSchema.plugin(encrypt, { secret: secret, fields: ["password"]});
 
 const User = mongoose.model("User",userSchema);
 
